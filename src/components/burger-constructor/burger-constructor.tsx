@@ -1,25 +1,72 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  selectIsUserAuth,
+  selectConstructorItems,
+  selectOrderLoading,
+  selectCreatedOrder
+} from '../../services/selectors';
+import { useNavigate } from 'react-router-dom';
+import {
+  clearNewOrder,
+  createNewOrder
+} from '../../services/slices/orderSlice';
+import { clearConstructor } from '../../services/slices/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  /** TODO: [DONE] взять переменные constructorItems, orderRequest и orderModalData из стора */
 
-  const orderRequest = false;
+  // достаем constructorItems из constructorSlice
+  const constructorItems = useSelector(selectConstructorItems);
 
-  const orderModalData = null;
+  // заглушки пока нет слайса заказа
+  const orderRequest = useSelector(selectOrderLoading);
+  const orderModalData = useSelector(selectCreatedOrder);
 
+  // достаем navigate
+  const navigate = useNavigate();
+
+  // достаем диспатч
+  const dispatch = useDispatch();
+
+  // получаем статус авторизации
+  const isAuth = useSelector(selectIsUserAuth);
+
+  // функция клика по кнопке оформить заказ
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
-  };
-  const closeOrderModal = () => {};
+    console.log('click');
 
+    // проверяем авторизацию пользователя
+    if (!isAuth) {
+      navigate('/login');
+      return;
+    }
+
+    // ливаем если не выбрали булочки или заказ уже в процессе
+    if (!constructorItems.bun || orderRequest) return;
+
+    // крафтим массив айдишников заказанного бургера
+    const orderItems = [
+      constructorItems.bun._id,
+      ...constructorItems.ingredients.map((item) => item._id),
+      constructorItems.bun._id
+    ];
+
+    // отправляем асинхронный экшен создания нового заказа
+    dispatch(createNewOrder(orderItems));
+  };
+
+  // функция для закрытия модалки
+  const closeOrderModal = () => {
+    // вызываем экшен очистки конструктора
+    dispatch(clearConstructor());
+    // вызываем экшен очистки нового заказа
+    dispatch(clearNewOrder());
+  };
+
+  // функция считает цену всего бургера
   const price = useMemo(
     () =>
       (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
@@ -30,7 +77,7 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  return null;
+  // return null;
 
   return (
     <BurgerConstructorUI
