@@ -1,6 +1,8 @@
 import { getOrderByNumberApi, getOrdersApi, orderBurgerApi } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
+import { useDispatch } from '../store';
+import { clearConstructor } from './constructorSlice';
 
 type TInitialState = {
   createdOrder: TOrder | null;
@@ -20,44 +22,64 @@ const initialState: TInitialState = {
 };
 
 //  экшен для создания нового заказа
-export const createNewOrder = createAsyncThunk(
+export const createNewOrder = createAsyncThunk<
+  TOrder, // что возвращаем
+  string[], // аргумент
+  { rejectValue: string } // что в reject
+>(
   'order/createOrder',
-  async (ingredientsId: string[], { rejectWithValue }) => {
+  async (ingredientsId: string[], { dispatch, rejectWithValue }) => {
     try {
       // получаем данные с сервера
       const data = await orderBurgerApi(ingredientsId);
+      // очищаем конструктор при успешном создании заказа
+      dispatch(clearConstructor());
       return data.order;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка создания');
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('ошибка создания заказа');
     }
   }
 );
 
 // экшен для получения заказов текущего пользователя
-export const fetchUserOrders = createAsyncThunk(
-  'order/fetchUserOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      // получаем заказы с сервера
-      const data = await getOrdersApi();
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.message || 'Ошибка получения пользовательских заказов'
-      );
+export const fetchUserOrders = createAsyncThunk<
+  TOrder[],
+  void,
+  { rejectValue: string }
+>('order/fetchUserOrders', async (_, { rejectWithValue }) => {
+  try {
+    // получаем заказы с сервера
+    const data = await getOrdersApi();
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    } else {
+      return rejectWithValue('ошибка получения пользовательских заказов');
     }
   }
-);
+});
 
 // экшен для получения заказа по номеру
-export const fetchOrderByNumber = createAsyncThunk(
+export const fetchOrderByNumber = createAsyncThunk<
+  TOrder,
+  number,
+  { rejectValue: string }
+>(
   'order/fetchOrderByNumber',
   async (orderNumber: number, { rejectWithValue }) => {
     try {
       const data = await getOrderByNumberApi(orderNumber);
       return data.orders[0];
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Заказ по номеру не найден');
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('ошибка получения заказа по номеру');
+      }
     }
   }
 );
@@ -87,7 +109,7 @@ export const orderSlice = createSlice({
       })
       .addCase(createNewOrder.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? null;
       })
 
       // получение всех пользовательских заказов
@@ -101,7 +123,7 @@ export const orderSlice = createSlice({
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? null;
       })
 
       // получение заказа по номеру
@@ -115,7 +137,7 @@ export const orderSlice = createSlice({
       })
       .addCase(fetchOrderByNumber.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? null;
       });
   }
 });

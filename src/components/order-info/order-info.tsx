@@ -26,7 +26,7 @@ export const OrderInfo: FC = () => {
   // из запроса достаем информацию о заказе по его номеру
   useEffect(() => {
     dispatch(fetchOrderByNumber(Number(number)));
-  });
+  }, []);
 
   // достаем заказ из стора
   const orderData = useSelector(selectOrderByNumber);
@@ -35,8 +35,6 @@ export const OrderInfo: FC = () => {
   const ingredients: TIngredient[] = useSelector(
     selectIngredientsState
   ).ingredients;
-
-  console.log(orderData);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {

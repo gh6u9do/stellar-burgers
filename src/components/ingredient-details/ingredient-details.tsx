@@ -13,6 +13,7 @@ export const IngredientDetails: FC = () => {
   const ingredientData = data.ingredients.find((i) => i._id === id) || null;
 
   if (!ingredientData) {
+    console.log('ингредиент не найден');
     return <Preloader />;
   }
 

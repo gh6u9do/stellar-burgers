@@ -21,21 +21,18 @@ export const constructorSlice = createSlice({
     // Экшен для добавления булки
     addBun: (state, action: PayloadAction<TIngredient>) => {
       // Проверяем что это действительно булка
-      if (action.payload.type !== 'bun') {
-        return;
+      if (action.payload.type === 'bun') {
+        state.bun = action.payload;
       }
-      state.bun = action.payload;
     },
 
     // Экшен для добавления ингредиента
     addIngredient: {
       reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
         // Проверяем что это НЕ булка
-        if (action.payload.type === 'bun') {
-          console.warn('addIngredient: нельзя добавлять bun через этот экшен');
-          return;
+        if (action.payload.type !== 'bun') {
+          state.ingredients.push(action.payload);
         }
-        state.ingredients.push(action.payload);
       },
       prepare: (ingredient: TIngredient) => {
         // Гарантируем что это не булка

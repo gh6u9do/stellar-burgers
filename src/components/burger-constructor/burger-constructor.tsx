@@ -13,7 +13,6 @@ import {
   clearNewOrder,
   createNewOrder
 } from '../../services/slices/orderSlice';
-import { clearConstructor } from '../../services/slices/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: [DONE] взять переменные constructorItems, orderRequest и orderModalData из стора */
@@ -36,8 +35,6 @@ export const BurgerConstructor: FC = () => {
 
   // функция клика по кнопке оформить заказ
   const onOrderClick = () => {
-    console.log('click');
-
     // проверяем авторизацию пользователя
     if (!isAuth) {
       navigate('/login');
@@ -60,8 +57,6 @@ export const BurgerConstructor: FC = () => {
 
   // функция для закрытия модалки
   const closeOrderModal = () => {
-    // вызываем экшен очистки конструктора
-    dispatch(clearConstructor());
     // вызываем экшен очистки нового заказа
     dispatch(clearNewOrder());
   };

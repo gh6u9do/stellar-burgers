@@ -18,11 +18,6 @@ export const ConstructorPage: FC = () => {
   const { loading, ingredients } = useSelector(selectIngredientsState);
   const isIngredientsLoading = loading;
 
-  // кладем в стор результат запроса ингредиентов
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
-
   return (
     <>
       {isIngredientsLoading ? (

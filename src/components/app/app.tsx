@@ -20,6 +20,7 @@ import { useDispatch } from '../../services/store';
 import { useEffect } from 'react';
 import { authCheked, getUser } from '../../services/slices/userSlice';
 import { getCookie } from '../../utils/cookie';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 
 const App = () => {
   // достаем функцию для навигации
@@ -43,6 +44,9 @@ const App = () => {
       // указываем что проверку совершили
       dispatch(authCheked());
     }
+
+    // запрашиваем ингредиенты с сервера
+    dispatch(fetchIngredients());
   }, [dispatch]);
 
   function closeModal() {
@@ -55,7 +59,9 @@ const App = () => {
       {/* указываем переданный location из стейта и стандартный по дефолту */}
       <Routes location={backgroundLocation || location}>
         <Route path='/' element={<ConstructorPage />} />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route path='/feed' element={<Feed />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
         <Route
           path='/login'
           element={
@@ -101,6 +107,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ProfileOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute>
+              <OrderInfo />
             </ProtectedRoute>
           }
         />
