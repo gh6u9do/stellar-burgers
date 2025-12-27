@@ -1,19 +1,29 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { selectUserData } from '@selectors';
+import { updateUser } from '../../services/slices/userSlice';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  /** TODO: [DONE] взять переменную из стора */
+
+  const dispatch = useDispatch();
+
+  // берем юзера из стора
+  const user = useSelector(selectUserData);
+
+  // const user = {
+  //   name: '',
+  //   email: ''
+  // };
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name ?? '',
+    email: user?.email ?? '',
     password: ''
   });
 
+  // обновляем форму когда user из стора обновился
   useEffect(() => {
     setFormValue((prevState) => ({
       ...prevState,
@@ -22,20 +32,24 @@ export const Profile: FC = () => {
     }));
   }, [user]);
 
+  // проверяем изменилось ли что-то на форме
   const isFormChanged =
     formValue.name !== user?.name ||
     formValue.email !== user?.email ||
     !!formValue.password;
 
+  //обработчик сабмита формы редактирования данных
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    // диспатчим экшен обновления данных
+    dispatch(updateUser(formValue));
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name || '',
+      email: user?.email || '',
       password: ''
     });
   };

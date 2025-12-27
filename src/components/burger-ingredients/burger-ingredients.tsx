@@ -1,14 +1,31 @@
 import { useState, useRef, useEffect, FC } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import { TTabMode } from '@utils-types';
+import { TIngredient, TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
+import { useSelector } from '../../services/store';
+import { selectIngredientsState } from '@selectors';
 
 export const BurgerIngredients: FC = () => {
-  /** TODO: взять переменные из стора */
-  const buns = [];
-  const mains = [];
-  const sauces = [];
+  /** TODO: [DONE] взять переменные из стора */
+
+  // достаем все ингредиенты из стора
+  const ingredients = useSelector(selectIngredientsState);
+
+  // достаем булочки из ингредиентов
+  const buns: TIngredient[] = ingredients.ingredients.filter(
+    (ingredient) => ingredient.type === 'bun'
+  );
+
+  // достаем начинки из ингредиентов
+  const mains: TIngredient[] = ingredients.ingredients.filter(
+    (ingredient) => ingredient.type === 'main'
+  );
+
+  // достаем соусы из игредиентов
+  const sauces: TIngredient[] = ingredients.ingredients.filter(
+    (ingredient) => ingredient.type === 'sauce'
+  );
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);
@@ -37,6 +54,7 @@ export const BurgerIngredients: FC = () => {
     }
   }, [inViewBuns, inViewFilling, inViewSauces]);
 
+  // обрабатываем клик по табу
   const onTabClick = (tab: string) => {
     setCurrentTab(tab as TTabMode);
     if (tab === 'bun')
@@ -47,7 +65,13 @@ export const BurgerIngredients: FC = () => {
       titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  return null;
+  // дефолтная строка!!!
+  // return null;
+
+  // если в ингредиентах пусто - возвращаем null
+  if (!buns.length && !mains.length && !sauces.length) {
+    return null;
+  }
 
   return (
     <BurgerIngredientsUI

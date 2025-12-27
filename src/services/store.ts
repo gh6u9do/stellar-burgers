@@ -6,15 +6,18 @@ import {
   useSelector as selectorHook
 } from 'react-redux';
 
-const rootReducer = () => {}; // Заменить на импорт настоящего редьюсера
+// импортируем корневой редюсер
+import { rootReducer } from './rootReducer';
 
+// создаем стор приложения
 const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production'
 });
 
+// экспортируем тип состояние стора
 export type RootState = ReturnType<typeof rootReducer>;
-
+// экспортируем тип диспатча нашего стора
 export type AppDispatch = typeof store.dispatch;
 
 export const useDispatch: () => AppDispatch = () => dispatchHook();

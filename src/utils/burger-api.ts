@@ -15,6 +15,7 @@ type TRefreshResponse = TServerResponse<{
   accessToken: string;
 }>;
 
+// запрос на обновление токена
 export const refreshToken = (): Promise<TRefreshResponse> =>
   fetch(`${URL}/auth/token`, {
     method: 'POST',
@@ -61,7 +62,7 @@ type TIngredientsResponse = TServerResponse<{
   data: TIngredient[];
 }>;
 
-type TFeedsResponse = TServerResponse<{
+export type TFeedsResponse = TServerResponse<{
   orders: TOrder[];
   total: number;
   totalToday: number;
@@ -71,6 +72,7 @@ type TOrdersResponse = TServerResponse<{
   data: TOrder[];
 }>;
 
+// запрос для получения ингредиентов с сервера
 export const getIngredientsApi = () =>
   fetch(`${URL}/ingredients`)
     .then((res) => checkResponse<TIngredientsResponse>(res))
@@ -79,6 +81,7 @@ export const getIngredientsApi = () =>
       return Promise.reject(data);
     });
 
+// запрос для получения ленты заказов
 export const getFeedsApi = () =>
   fetch(`${URL}/orders/all`)
     .then((res) => checkResponse<TFeedsResponse>(res))

@@ -1,15 +1,34 @@
+import { selectFeed } from '@selectors';
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 import { TOrder } from '@utils-types';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { fetchFeeds } from '../../services/slices/feedSlice';
+import { useSelector, useDispatch } from '../../services/store';
 
 export const Feed: FC = () => {
-  /** TODO: взять переменную из стора */
-  const orders: TOrder[] = [];
+  /** TODO: [DONE] взять переменную из стора */
+  const dispatch = useDispatch();
+  // достаем данные ленты заказов из стора
+  const data = useSelector(selectFeed);
 
-  if (!orders.length) {
+  // при монтировании получаем с сервера актуальную ленту
+  useEffect(() => {
+    dispatch(fetchFeeds());
+  }, [dispatch]);
+
+  // если массив заказов пуст - показываем прелоадер
+  if (!data.orders.length) {
     return <Preloader />;
   }
 
-  <FeedUI orders={orders} handleGetFeeds={() => {}} />;
+  return (
+    <FeedUI
+      orders={data.orders}
+      handleGetFeeds={() => {
+        // на кнопку обновления снова получаем ленту с сервера
+        dispatch(fetchFeeds());
+      }}
+    />
+  );
 };
