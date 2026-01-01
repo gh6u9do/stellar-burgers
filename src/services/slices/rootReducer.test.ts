@@ -1,11 +1,10 @@
 import { expect, test, describe } from '@jest/globals';
 import { rootReducer } from '../rootReducer';
 
-// todo: проверить правильную иницализацию rootReducer
 describe('rootReducer', () => {
   test('rootReducer корректно инициализировался', () => {
     // создаем стейт (первый аргумент - undefined, чтобы он вернул initial state, второй аргумент - фиктивный экшен)
-    const state = rootReducer(undefined, { type: '@@INIT' });
+    const state = rootReducer(undefined, { type: 'UNKNOW_ACTION' });
 
     // сравниваем стейт
     expect(state).toEqual({

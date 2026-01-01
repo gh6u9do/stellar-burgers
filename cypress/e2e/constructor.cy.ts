@@ -13,7 +13,7 @@ describe('constructor page', () => {
         cy.intercept('GET', '**/auth/user', { fixture: 'user.json' }).as('getUser');
 
         // возвращаем моковые данные ответа на запрос создания заказа
-        cy.intercept('POST', '**/orders', {fixture: 'order.json' }).as('createOrder');
+        cy.intercept('POST', '**/orders', { fixture: 'order.json' }).as('createOrder');
 
         // переходим на главный экран
         cy.visit('/');
@@ -38,21 +38,35 @@ describe('constructor page', () => {
     });
 
     it('модалка ингредиента открывается и закрывается', () => {
-        // открываем модалку
-        cy.get('[data-cy="ingredient-card"]').first().click();
+        // берем имя ингредиента
+        const ingredientName = 'Краторная булка N-200i';
+
+        // открываем модалку ингредиента
+        cy.contains('[data-cy="ingredient-card"]', ingredientName).click();
+
+        // проверяем, что в модалке правильное название
+        cy.contains(ingredientName).should('exist');
         cy.contains('Калории, ккал').should('exist');
 
         // закрытие по крестику
         cy.get('[data-cy="modal-close"]').click();
-        cy.contains('Калории, ккал').should('not.exist');
+        cy.contains(ingredientName).should('not.exist');
 
-        // снова открываем модалку
-        cy.get('[data-cy="ingredient-card"]').first().click();
-        cy.contains('Калории, ккал').should('exist');
+        // снова открываем
+        cy.contains('[data-cy="ingredient-card"]', ingredientName).click();
+        cy.contains(ingredientName).should('exist');
 
-        // закрываем по клику на оверлей
+        // закрытие по оверлею
         cy.get('[data-cy="modal-overlay"]').click({ force: true });
-        cy.contains('Калории, ккал').should('not.exist');
+        cy.contains(ingredientName).should('not.exist');
+
+        // снова открываем
+        cy.contains('[data-cy="ingredient-card"]', ingredientName).click();
+        cy.contains(ingredientName).should('exist');
+
+        // закрытие по Esc
+        cy.get('body').type('{esc}');
+        cy.contains(ingredientName).should('not.exist');
     });
 
     it('заказ создается', () => {
