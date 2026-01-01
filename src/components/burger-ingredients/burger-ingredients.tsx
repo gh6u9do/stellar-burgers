@@ -65,9 +65,6 @@ export const BurgerIngredients: FC = () => {
       titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // дефолтная строка!!!
-  // return null;
-
   // если в ингредиентах пусто - возвращаем null
   if (!buns.length && !mains.length && !sauces.length) {
     return null;

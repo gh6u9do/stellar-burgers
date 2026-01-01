@@ -60,10 +60,27 @@ export const constructorSlice = createSlice({
       // задаем дефолтные значения
       state.bun = null;
       state.ingredients = [];
+    },
+
+    // изменение позиции
+    moveIngredient: (
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) => {
+      const { fromIndex, toIndex } = action.payload;
+      const item = state.ingredients[fromIndex];
+
+      state.ingredients.splice(fromIndex, 1);
+      state.ingredients.splice(toIndex, 0, item);
     }
   }
 });
 
 // экспортируем экшены
-export const { addBun, addIngredient, removeIngredient, clearConstructor } =
-  constructorSlice.actions;
+export const {
+  addBun,
+  addIngredient,
+  removeIngredient,
+  clearConstructor,
+  moveIngredient
+} = constructorSlice.actions;
